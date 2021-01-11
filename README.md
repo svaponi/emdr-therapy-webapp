@@ -1,6 +1,8 @@
 # emdr-therapy-webapp
 A simple webapp for a self administrated EMDR treatment.
 
+Click [here](https://svaponi.github.io/emdr-therapy-webapp/) to see in action.
+
 <br/>
 
 #### What is EMDR?
