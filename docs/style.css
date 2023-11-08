@@ -1,0 +1,171 @@
+.ng-cloak {
+    display: none !important
+}
+
+button, input, select, label {
+    font-size: 16px !important
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: #eee;
+    color: #333;
+    min-width: 244px;
+}
+
+main {
+    width: 100%;
+    height: 100%;
+}
+
+.canvas-container {
+    width: 100%;
+    height: calc(100% - 54px)
+}
+
+.controls-container {
+    box-sizing: border-box;
+    height: 54px;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-content: flex-start;
+    gap: 10px 10px;
+}
+
+.control {
+    display: flex;
+}
+
+.control .label {
+    position: relative;
+    top: 6px;
+    color: black;
+}
+
+canvas {
+    border: none;
+    width: 100%;
+    height: 100%;
+}
+
+body.fullscreen .controls-container {
+    display: none;
+}
+
+body.fullscreen canvas {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
+
+#radius, #speed, #time {
+    width: 74px;
+}
+
+#color, #bgcolor {
+    width: 38px;
+}
+
+#mov {
+    width: 120px;
+}
+
+#lang {
+    width: 120px;
+}
+
+.start-stop {
+    width: 100px !important;
+}
+
+.controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 32px;
+    margin: 0 0 0 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
+}
+
+.slider.round {
+    border-radius: 32px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+@media (max-width: 1122px) {
+    .canvas-container {
+        height: calc(100% - 98px)
+    }
+
+    .controls-container {
+        height: 98px;
+    }
+}
+
+@media (max-width: 631px) {
+    .canvas-container {
+        height: calc(100% - 142px)
+    }
+
+    .controls-container {
+        height: 142px;
+    }
+}
