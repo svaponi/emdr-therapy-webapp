@@ -23,78 +23,61 @@
     <div class="canvas-container">
         <canvas id="canvas"></canvas>
     </div>
-    <div class="controls">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-xs-12 form-inline">
-                    <div class="form-group">
-                        <button class="form-control btn btn-primary fixedsize" ng-click="start()"
-                                ng-if="!isRunning()"><span
-                                ng-bind="trans[lang].start">Start</span></button>
-                        <button class="form-control btn btn-danger fixedsize ng-cloak" ng-click="stop()"
-                                ng-if="isRunning()"><span
-                                ng-bind="trans[lang].stop">Stop</span></button>
-                    </div>
-                    <div class="form-group">
-                        <label for="mov" class="hidden-xs hidden-sm"><span
-                                ng-bind="trans[lang].movement">Movement</span></label>
-                        <select id="mov" class="form-control" ng-model="conf.dir2" ng-change="init()">
-                            <option value="1,0">{{trans[lang].horizontal}}</option>
-                            <option value="0,1">{{trans[lang].vertical}}</option>
-                            <option value="1,1">{{trans[lang].oblique1}}</option>
-                            <option value="1,-1">{{trans[lang].oblique2}}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="vel" class="hidden-xs hidden-sm"><span
-                                ng-bind="trans[lang].speed">Speed</span></label>
-                        <input id="vel" class="form-control" type="number" step="{{conf.speed.step}}"
-                               min="{{conf.speed.min}}"
-                               max="{{conf.speed.max}}" ng-model="conf.speed.value"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="dim" class="hidden-xs hidden-sm"><span
-                                ng-bind="trans[lang].dimension">Dimension</span></label>
-                        <input id="dim" class="form-control" type="number" step="{{conf.radius.step}}" min="{{conf.radius.min}}"
-                               max="{{conf.radius.max}}" ng-model="conf.radius.value" ng-change="redrawCircle()"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="color" class="hidden-xs hidden-sm"><span
-                                ng-bind="trans[lang].colors">Colors</span></label>
-                        <input id="color" class="form-control" type="color" ng-model="color"
-                               ng-change="redrawCircle()"/>
-                        <input id="bgcolor" class="form-control" type="color" ng-model="bgcolor"
-                               ng-change="redrawBg()"/>
-                    </div>
-                    <div class="form-group pull-right">
-                        <select id="lang" class="form-control" ng-model="lang">
-                            <option value="en">English</option>
-                            <option value="de">Deutsch</option>
-                            <option value="fr">Français</option>
-                            <option value="it">Italiano</option>
-                            <option value="es">Español</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="row" ng-if="debug">
-                <div class="col-xs-4">
-                    <h4>circle.position</h4>
-                    <pre>{{circle.position | json}}</pre>
-                </div>
-                <div class="col-xs-4">
-                    <h4>playgrd</h4>
-                    <pre>{{playgrd | json}}</pre>
-                </div>
-                <div class="col-xs-4">
-                    <h4>conf</h4>
-                    <pre>{{conf | json}}</pre>
-                </div>
-                <div class="col-xs-4">
-                    <h4>event</h4>
-                    <pre>{{event | json}}</pre>
-                </div>
-            </div>
+    <div class="controls-container">
+        <div class="control">
+            <button class="form-control btn btn-primary start-stop" ng-click="start()"
+                    ng-if="!isRunning()"><span
+                    ng-bind="trans[lang].start">Start</span></button>
+            <button class="form-control btn btn-danger start-stop ng-cloak" ng-click="stop()"
+                    ng-if="isRunning()"><span
+                    ng-bind="trans[lang].stop">Stop</span></button>
+        </div>
+        <div class="control">
+            <label class="label" for="mov"><span ng-bind="trans[lang].movement">Movement</span></label>
+            <select id="mov" class="form-control" ng-model="conf.dir2" ng-change="init()">
+                <option value="1,0">{{trans[lang].horizontal}}</option>
+                <option value="0,1">{{trans[lang].vertical}}</option>
+                <option value="1,1">{{trans[lang].oblique1}}</option>
+                <option value="1,-1">{{trans[lang].oblique2}}</option>
+            </select>
+        </div>
+        <div class="control">
+            <label class="label" for="speed"><span ng-bind="trans[lang].speed">Speed</span></label>
+            <input id="speed" class="form-control" type="number" step="{{conf.speed.step}}"
+                   min="{{conf.speed.min}}"
+                   max="{{conf.speed.max}}" ng-model="conf.speed.value"/>
+        </div>
+        <div class="control">
+            <label class="label" for="radius"><span ng-bind="trans[lang].dimension">Dimension</span></label>
+            <input id="radius" class="form-control" type="number" step="{{conf.radius.step}}"
+                   min="{{conf.radius.min}}"
+                   max="{{conf.radius.max}}" ng-model="conf.radius.value" ng-change="redrawCircle()"/>
+        </div>
+        <div class="control">
+            <label class="label" for="color"><span ng-bind="trans[lang].colors">Colors</span></label>
+            <input id="color" class="form-control" type="color" ng-model="color"
+                   ng-change="redrawCircle()"/>
+            <input id="bgcolor" class="form-control" type="color" ng-model="bgcolor"
+                   ng-change="redrawBg()"/>
+        </div>
+        <div class="control">
+            <label class="label" for="time"><span ng-bind="trans[lang].time">Time</span></label>
+            <input id="time" class="form-control" type="number" step="{{conf.time.step}}"
+                   min="{{conf.time.min}}"
+                   max="{{conf.time.max}}" ng-disabled="!conf.time.enabled" ng-model="conf.time.value"/>
+            <label class="switch">
+                <input type="checkbox" ng-model="conf.time.enabled">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="control">
+            <select id="lang" class="form-control" ng-model="lang">
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="fr">Français</option>
+                <option value="it">Italiano</option>
+                <option value="es">Español</option>
+            </select>
         </div>
     </div>
 </main>

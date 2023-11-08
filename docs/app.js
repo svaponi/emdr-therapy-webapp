@@ -10,6 +10,7 @@ angular.module("app", [])
             oblique1: 'Oblique 1',
             oblique2: 'Oblique 2',
             speed: 'Speed',
+            time: 'Time',
             start: 'Start',
             stop: 'Stop'
         },
@@ -23,6 +24,7 @@ angular.module("app", [])
             oblique1: 'Schräg 1',
             oblique2: 'Schräg 2',
             speed: 'Geschwindigkeit',
+            time: 'Zeit',
             start: 'Anfang',
             stop: 'Halt'
         },
@@ -36,6 +38,7 @@ angular.module("app", [])
             oblique1: 'Oblique 1',
             oblique2: 'Oblique 2',
             speed: 'Vélocité',
+            time: 'Temps',
             start: 'Démarrer',
             stop: 'Arrêtez'
         },
@@ -49,6 +52,7 @@ angular.module("app", [])
             oblique1: 'Obliquo 1',
             oblique2: 'Obliquo 2',
             speed: 'Velocità',
+            time: 'Tempo',
             start: 'Partenza',
             stop: 'Stop'
         },
@@ -62,6 +66,7 @@ angular.module("app", [])
             oblique1: 'Oblicua 1',
             oblique2: 'Oblicua 2',
             speed: 'Velocidad',
+            time: 'Tiempo',
             start: 'Inicia',
             stop: 'Para'
         }
@@ -112,6 +117,7 @@ angular.module("app", [])
         const canvas = document.getElementById("canvas")
         canvas.addEventListener('click', (e) => {
             $s.toggleRun()
+            $s.$apply()
         });
 
         // configurazione
@@ -131,10 +137,29 @@ angular.module("app", [])
                 min: 2,
                 max: 100
             },
+            time: {
+                default: 30,
+                enabled: true,
+                value: 0,
+                step: 5,
+                min: 5,
+                max: 300
+            },
             div: 1000, // divisore per calcolare lo spostamento (per ogni frame) in rapporto alla grandezza del playground
             dir2: '1,0', // asse di movimento
             lang: 'en'
         };
+
+        setInterval(() => {
+            if ($s.isRunning() && $s.conf.time.enabled) {
+                if ($s.conf.time.value > 0) {
+                    $s.conf.time.value -= 1
+                } else {
+                    $s.init()
+                }
+                $s.$apply()
+            }
+        }, 1000)
 
         function getX() {
             return Number($s.conf.dir2.split(',')[0]);
@@ -195,6 +220,7 @@ angular.module("app", [])
             $s.m.r = false;
             if ($s.circle)
                 $s.circle.remove();
+            $s.conf.time.value = $s.conf.time.default
             $s.circle = undefined;
             $s.redrawBg();
             $s.redrawCircle({
