@@ -1,3 +1,104 @@
+class AudioService {
+
+    context;
+    beepFile = 'beep.mov';
+    buffers = new Map();
+    playing = new Map();
+
+    constructor() {
+        this.context = new AudioContext();
+        this.preload();
+    }
+
+    async preload() {
+        await this.getBuffer(this.beepFile);
+        return this;
+    }
+
+
+    async beep(params) {
+        return this.playSound(this.beepFile, params);
+    }
+
+    getBuffer(sound) {
+
+        console.debug('get sound', sound);
+
+        if (this.buffers.has(sound)) {
+            const buffer = this.buffers.get(sound);
+            return new Promise((resolve) => resolve(buffer));
+        }
+
+        const self = this;
+        return new Promise((resolve, reject) => {
+            const request = new XMLHttpRequest();
+            request.open('GET', sound, true);
+            request.responseType = 'arraybuffer';
+            request.onload = function () {
+                self.context.decodeAudioData(
+                    request.response,
+                    (buffer) => {
+                        console.debug('loaded sound', sound);
+                        self.buffers.set(sound, buffer);
+                        resolve(buffer);
+                    },
+                    (error) => {
+                        console.error('cannot load sound', sound, error);
+                        reject(error);
+                    }
+                );
+            };
+            request.send();
+        });
+    }
+
+    async playSound(sound, params = {}) {
+
+        //do not play if already playing
+        if (this.playing.get(sound)) {
+            console.debug('ignore sound (already playing)', sound);
+            return Promise.resolve();
+        }
+
+        // start playing
+        this.playing.set(sound, true);
+
+        const buffer = await this.getBuffer(sound);
+
+        const source = this.context.createBufferSource(); // creates a sound source
+        const gainNode = this.context.createGain();
+        source.buffer = buffer;                    // tell the source which sound to play
+        source.connect(gainNode); // connect the source to gain node
+        gainNode.connect(this.context.destination); // connect the gain node to the context's destination (the speakers)
+
+        if (params.playbackRate) {
+            source.playbackRate.value = params.playbackRate;
+        }
+        if (params.gain) {
+            gainNode.gain.value = params.gain;
+        }
+        // waitStart == true: promise resolves when sound starts playing
+        // waitStart == false: promise resolves when sound ends playing
+        let waitStart = params.waitStart || false;
+
+        // end playing
+        const self = this;
+        return new Promise((resolve) => {
+
+            source.addEventListener('ended', () => {
+                console.debug('ended sound', sound);
+                self.playing.delete(sound);
+                if (!waitStart) resolve();
+            }, {once: true});
+
+            console.debug('play sound', sound, params);
+            const startInSeconds = (params.startIn || 0) / 1000;
+            source.start(this.context.currentTime + startInSeconds);
+            if (waitStart) resolve();
+        })
+    }
+}
+
 angular.module("app", [])
     .constant('translations', {
         en: {
@@ -75,6 +176,8 @@ angular.module("app", [])
     .controller('ctrl', ['$scope', '$rootScope', '$window', 'translations', function ($s, $rs, $window, trans) {
         paper.install($window);
         paper.setup('canvas');
+
+        $s.audio = new AudioService();
 
         function mapKeyboardEvent(e) {
             if (e.code === 'Enter') {
@@ -296,19 +399,30 @@ angular.module("app", [])
                 $s.$apply(); // aggiorno i dati esposti per il DEBUG
             }
             if (getX() !== 0) {
-                if ($s.m.v === getX() && $s.circle.position.x < $s.playgrd.x.max)
+                if ($s.m.v === getX() && $s.circle.position.x < $s.playgrd.x.max) {
                     $s.circle.position.x += $s.conf.speed.value * $s.playgrd.x.delta / $s.conf.div;
-                else if ($s.m.v === -getX() && $s.circle.position.x > $s.playgrd.x.min)
+                    if ($s.playgrd.x.max - $s.circle.position.x <= $s.conf.radius.value) {
+                        $s.audio.beep()
+                    }
+                } else if ($s.m.v === -getX() && $s.circle.position.x > $s.playgrd.x.min) {
                     $s.circle.position.x -= $s.conf.speed.value * $s.playgrd.x.delta / $s.conf.div;
-                else $s.m.v = -$s.m.v;
+                    if ($s.circle.position.x - $s.playgrd.x.min <= $s.conf.radius.value) {
+                        $s.audio.beep()
+                    }
+                } else {
+                    $s.m.v = -$s.m.v;
+                }
             }
             if (getY() !== 0) {
                 if ($s.m.v === getY() && $s.circle.position.y < $s.playgrd.y.max)
                     $s.circle.position.y += $s.conf.speed.value * $s.playgrd.y.delta / $s.conf.div;
                 else if ($s.m.v === -getY() && $s.circle.position.y > $s.playgrd.y.min)
                     $s.circle.position.y -= $s.conf.speed.value * $s.playgrd.y.delta / $s.conf.div;
-                else if (getX() === 0) // inverto il senso di marcia solo se non è già stato fatto per x
+                else if (getX() === 0) {
+                    // inverto il senso di marcia solo se non è già stato fatto per x
                     $s.m.v = -$s.m.v;
+                    $s.audio.beep()
+                }
             }
         }
         view.onKeyUp = function (e) {
