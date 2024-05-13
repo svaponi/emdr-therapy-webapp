@@ -1,7 +1,7 @@
 class AudioService {
 
     context;
-    beepFile = 'beep.mov';
+    beepFile = 'beep.wav';
     buffers = new Map();
     playing = new Map();
 
