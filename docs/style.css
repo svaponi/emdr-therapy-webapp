@@ -15,22 +15,31 @@ body {
 }
 
 main {
+    margin: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#canvas-container {
+    width: 100%;
+    height: calc(100% - 54px);
+}
+
+
+canvas {
     width: 100%;
     height: 100%;
 }
 
-.canvas-container {
-    width: 100%;
-    height: calc(100% - 54px)
-}
 
-.controls-container {
+#controls-container {
     box-sizing: border-box;
-    height: 54px;
+    /*height: 54px;*/
     padding: 10px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-content: flex-start;
     gap: 10px 10px;
 }
@@ -45,34 +54,12 @@ main {
     color: black;
 }
 
-canvas {
-    border: none;
-    width: 100%;
-    height: 100%;
-}
-
-body.fullscreen .controls-container {
-    display: none;
-}
-
-body.fullscreen canvas {
-    position: absolute;
-    width: 100%;
-    height: 100vh;
-    top: 0;
-    left: 0;
-}
-
 #radius, #speed, #time {
     width: 74px;
 }
 
-#color, #bgcolor {
+#color, #bg-color {
     width: 38px;
-}
-
-#mov {
-    width: 120px;
 }
 
 #lang {
@@ -81,13 +68,6 @@ body.fullscreen canvas {
 
 .start-stop {
     width: 100px !important;
-}
-
-.controls {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
 }
 
 .switch {
@@ -148,24 +128,4 @@ input:checked + .slider:before {
 
 .slider.round:before {
     border-radius: 50%;
-}
-
-@media (max-width: 1122px) {
-    .canvas-container {
-        height: calc(100% - 98px)
-    }
-
-    .controls-container {
-        height: 98px;
-    }
-}
-
-@media (max-width: 631px) {
-    .canvas-container {
-        height: calc(100% - 142px)
-    }
-
-    .controls-container {
-        height: 142px;
-    }
 }
