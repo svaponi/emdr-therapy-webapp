@@ -6,7 +6,8 @@ const translations = {
         speed: 'Speed',
         time: 'Timer',
         start: 'Start',
-        stop: 'Stop'
+        stop: 'Stop',
+        shape: 'Shape'
     },
     de: {
         label: 'Deutsch',
@@ -15,7 +16,8 @@ const translations = {
         speed: 'Geschwindigkeit',
         time: 'Timer',
         start: 'Start',
-        stop: 'Halt'
+        stop: 'Halt',
+        shape: 'Form'
     },
     fr: {
         label: 'Français',
@@ -24,7 +26,8 @@ const translations = {
         speed: 'Vélocité',
         time: 'Minuteur',
         start: 'Démarrer',
-        stop: 'Arrêtez'
+        stop: 'Arrêtez',
+        shape: 'Forme'
     },
     it: {
         label: 'Italiano',
@@ -33,7 +36,8 @@ const translations = {
         speed: 'Velocità',
         time: 'Timer',
         start: 'Avvio',
-        stop: 'Stop'
+        stop: 'Stop',
+        shape: 'Forma'
     },
     es: {
         label: 'Español',
@@ -42,7 +46,8 @@ const translations = {
         speed: 'Velocidad',
         time: 'Temporizador',
         start: 'Inicia',
-        stop: 'Para'
+        stop: 'Para',
+        shape: 'Forma'
     }
 }
 document.addEventListener("DOMContentLoaded", () => {
@@ -80,6 +85,67 @@ document.addEventListener("DOMContentLoaded", () => {
     const controls = document.getElementById('controls-container');
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const closeMenuBtn = document.getElementById('close-menu-btn');
+    const shapeButton = document.getElementById('shape-button');
+    const currentShape = document.getElementById('current-shape');
+    const shapePickerContainer = document.getElementById('shape-picker-container');
+    const emojiPicker = document.getElementById('emoji-picker');
+
+    // Shape/Emoji picker functionality
+    shapeButton.addEventListener('click', () => {
+        shapePickerContainer.classList.remove('hidden');
+        setTimeout(() => {
+            shapePickerContainer.classList.add('visible');
+        }, 10);
+        
+        // Play a subtle sound for accessibility
+        try {
+            const openSound = new Audio();
+            openSound.src = 'beep.mp3';
+            openSound.volume = 0.1;
+            openSound.play();
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+        
+        // Close other menus/popups if open
+        event.stopPropagation();
+    });
+
+    emojiPicker.addEventListener('emoji-click', event => {
+        console.log(event.detail);
+        currentShape.textContent = event.detail.unicode;
+        conf.shapeType = 'emoji';
+        conf.shapeEmoji = event.detail.unicode;
+        
+        // Close the emoji picker
+        shapePickerContainer.classList.remove('visible');
+        setTimeout(() => {
+            shapePickerContainer.classList.add('hidden');
+        }, 300);
+        
+        // Redraw with new shape
+        redrawBall();
+        
+        // Play a success sound for selection
+        try {
+            const selectSound = new Audio();
+            selectSound.src = 'beep.mp3';
+            selectSound.volume = 0.2;
+            selectSound.play();
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+    });
+
+    // Close emoji picker when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!shapePickerContainer.contains(event.target) && event.target !== shapeButton) {
+            shapePickerContainer.classList.remove('visible');
+            setTimeout(() => {
+                shapePickerContainer.classList.add('hidden');
+            }, 300);
+        }
+    });
 
     // Hamburger menu functionality
     hamburgerBtn.addEventListener('click', () => {
@@ -156,6 +222,8 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (prop === 'lang') {
                 lang.value = value;
                 setLang()
+            } else if (prop === 'shapeType' || prop === 'shapeEmoji') {
+                // These are handled directly in the redrawBall function
             }
             return true;
         }
@@ -170,6 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
     conf.timeEnabled = true
     conf.directionX = 1
     conf.lang = 'en'
+    conf.shapeType = 'circle'
+    conf.shapeEmoji = '●'
 
     function setLang() {
         const t = translations[conf.lang];
@@ -179,6 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
         radius.labels[0].innerText = t.dimension;
         color.labels[0].innerText = t.colors;
         time.labels[0].innerText = t.time;
+        document.querySelector('label[for="shape-select"]').innerText = t.shape;
     }
 
     function getStartPosition() {
@@ -192,11 +263,24 @@ document.addEventListener("DOMContentLoaded", () => {
             x = Math.min(Math.max(ball.position.x, conf.radius), paper.view.bounds.width - conf.radius)
             ball.remove();
         }
-        ball = new paper.Path.Circle({
-            center: [x, y],
-            radius: conf.radius,
-            fillColor: conf.color
-        });
+        
+        if (conf.shapeType === 'emoji') {
+            // Create a text item for emoji
+            ball = new paper.PointText({
+                point: [x, y + (conf.radius / 2)], // Adjust position for emoji center
+                content: conf.shapeEmoji,
+                fillColor: conf.color,
+                fontSize: conf.radius * 2,
+                justification: 'center'
+            });
+        } else {
+            // Default circle
+            ball = new paper.Path.Circle({
+                center: [x, y],
+                radius: conf.radius,
+                fillColor: conf.color
+            });
+        }
     }
 
     redrawBall()
@@ -318,6 +402,11 @@ document.addEventListener("DOMContentLoaded", () => {
             toggleFullscreen();
         } else if (event.code === 'Escape') {
             controls.classList.remove('open');
+            // Also close emoji picker if open
+            shapePickerContainer.classList.remove('visible');
+            setTimeout(() => {
+                shapePickerContainer.classList.add('hidden');
+            }, 300);
         }
     });
 

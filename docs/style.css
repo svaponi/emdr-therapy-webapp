@@ -204,6 +204,61 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
+/* Shape selection styling */
+.shape-selector {
+    position: relative;
+    width: 100%;
+}
+
+#shape-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+#current-shape {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+#shape-picker-container {
+    position: absolute;
+    z-index: 300;
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin-top: 8px;
+    transition: opacity 0.2s ease;
+    opacity: 0;
+}
+
+#shape-picker-container.visible {
+    opacity: 1;
+}
+
+#shape-picker-container.hidden {
+    display: none;
+}
+
+emoji-picker {
+    width: 100%;
+    height: 300px;
+    --border-radius: 8px;
+    --num-columns: 6;
+    --border-size: 0;
+    --emoji-size: 1.5rem;
+}
+
+@media (max-width: 320px) {
+    emoji-picker {
+        --num-columns: 5;
+        height: 250px;
+    }
+}
+
 /* Hide hamburger on larger screens if desired */
 @media (min-width: 992px) {
     .controls-sidebar {

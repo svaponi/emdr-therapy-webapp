@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="paper.min.js"></script>
     <script src="app.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 </head>
 <audio id="beep-sound">
     <source src="beep.mp3" type="audio/mp3"/>
@@ -40,6 +41,17 @@
     <div class="control">
         <button class="form-control btn btn-primary start-stop" id="start-btn">Start</button>
         <button class="form-control btn btn-danger start-stop hidden" id="stop-btn">Stop</button>
+    </div>
+    <div class="control">
+        <label class="label" for="shape-select">Shape</label>
+        <div class="shape-selector">
+            <button id="shape-button" class="form-control btn btn-outline-secondary">
+                <span id="current-shape">●</span> Select Shape
+            </button>
+            <div id="shape-picker-container" class="hidden">
+                <emoji-picker id="emoji-picker"></emoji-picker>
+            </div>
+        </div>
     </div>
     <div class="control">
         <label class="label" for="speed">Speed</label>
