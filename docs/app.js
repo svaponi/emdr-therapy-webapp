@@ -8,7 +8,12 @@ const translations = {
         start: 'Start',
         stop: 'Stop',
         shape: 'Shape',
-        fullscreen: 'Fullscreen Mode'
+        fullscreen: 'Fullscreen Mode',
+        motionStyle: 'Motion Style',
+        horizontal: 'Horizontal',
+        dvd: 'DVD Mode',
+        randomBounce: 'Random Bounce',
+        randomMotion: 'Random Motion'
     },
     de: {
         label: 'Deutsch',
@@ -19,7 +24,12 @@ const translations = {
         start: 'Start',
         stop: 'Halt',
         shape: 'Form',
-        fullscreen: 'Vollbildmodus'
+        fullscreen: 'Vollbildmodus',
+        motionStyle: 'Bewegungsstil',
+        horizontal: 'Horizontal',
+        dvd: 'DVD-Modus',
+        randomBounce: 'Zufälliges Prallen',
+        randomMotion: 'Zufällige Bewegung'
     },
     fr: {
         label: 'Français',
@@ -30,7 +40,12 @@ const translations = {
         start: 'Démarrer',
         stop: 'Arrêtez',
         shape: 'Forme',
-        fullscreen: 'Mode plein écran'
+        fullscreen: 'Mode plein écran',
+        motionStyle: 'Style de mouvement',
+        horizontal: 'Horizontal',
+        dvd: 'Mode DVD',
+        randomBounce: 'Rebond aléatoire',
+        randomMotion: 'Mouvement aléatoire'
     },
     it: {
         label: 'Italiano',
@@ -41,7 +56,12 @@ const translations = {
         start: 'Avvio',
         stop: 'Stop',
         shape: 'Forma',
-        fullscreen: 'Modalità a tutto schermo'
+        fullscreen: 'Modalità a tutto schermo',
+        motionStyle: 'Stile di movimento',
+        horizontal: 'Orizzontale',
+        dvd: 'Modalità DVD',
+        randomBounce: 'Rimbalzo casuale',
+        randomMotion: 'Movimento casuale'
     },
     es: {
         label: 'Español',
@@ -52,7 +72,12 @@ const translations = {
         start: 'Inicia',
         stop: 'Para',
         shape: 'Forma',
-        fullscreen: 'Modo pantalla completa'
+        fullscreen: 'Modo pantalla completa',
+        motionStyle: 'Estilo de movimiento',
+        horizontal: 'Horizontal',
+        dvd: 'Modo DVD',
+        randomBounce: 'Rebote aleatorio',
+        randomMotion: 'Movimiento aleatorio'
     }
 }
 document.addEventListener("DOMContentLoaded", () => {
@@ -95,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const shapePickerContainer = document.getElementById('shape-picker-container');
     const emojiPicker = document.getElementById('emoji-picker');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const motionStyle = document.getElementById('motion-style');
 
     // Shape/Emoji picker functionality
     shapeButton.addEventListener('click', () => {
@@ -230,6 +256,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 setLang()
             } else if (prop === 'shapeType' || prop === 'shapeEmoji') {
                 // These are handled directly in the redrawBall function
+            } else if (prop === 'motionStyle') {
+                motionStyle.value = value;
+                // If animation is already running, restart it with new motion style
+                if (conf.animation) {
+                    pauseAnimation();
+                    startAnimation();
+                }
             }
             return true;
         }
@@ -243,9 +276,16 @@ document.addEventListener("DOMContentLoaded", () => {
     conf.time = 0
     conf.timeEnabled = true
     conf.directionX = 1
+    conf.directionY = 1
     conf.lang = 'en'
     conf.shapeType = 'circle'
     conf.shapeEmoji = '●'
+    conf.motionStyle = 'horizontal'
+    
+    // Variables for different motion styles
+    let dvdTimer = null;
+    let randomBounceTimer = null;
+    let randomMotionTimer = null;
 
     function setLang() {
         const t = translations[conf.lang];
@@ -257,6 +297,25 @@ document.addEventListener("DOMContentLoaded", () => {
         color.labels[0].innerText = t.colors;
         time.labels[0].innerText = t.time;
         document.querySelector('label[for="shape-select"]').innerText = t.shape;
+        document.querySelector('label[for="motion-style"]').innerText = t.motionStyle;
+        
+        // Update motion style dropdown options
+        Array.from(motionStyle.options).forEach(option => {
+            switch(option.value) {
+                case 'horizontal':
+                    option.textContent = t.horizontal;
+                    break;
+                case 'dvd':
+                    option.textContent = t.dvd;
+                    break;
+                case 'random-bounce':
+                    option.textContent = t.randomBounce;
+                    break;
+                case 'random-motion':
+                    option.textContent = t.randomMotion;
+                    break;
+            }
+        });
     }
 
     function getStartPosition() {
@@ -306,22 +365,176 @@ document.addEventListener("DOMContentLoaded", () => {
 
     redrawBg()
 
-    const moveBall = () => {
-        if (conf.directionX > 0 && ball.position.x + conf.radius >= paper.view.bounds.width || conf.directionX < 0 && ball.position.x - conf.radius <= 0) {
+    // Regular horizontal movement
+    const moveHorizontal = () => {
+        if (conf.directionX > 0 && ball.position.x + conf.radius >= paper.view.bounds.width || 
+            conf.directionX < 0 && ball.position.x - conf.radius <= 0) {
             conf.directionX *= -1;
             beepSound.play();
         }
         const deltaX = Math.round(paper.view.bounds.width - 2 * conf.radius)
         ball.position.x += conf.directionX * conf.speed * deltaX / 1000;
     };
+    
+    // DVD mode - bounces around corners
+    const moveDVD = () => {
+        const bounds = paper.view.bounds;
+        const r = conf.radius;
+        
+        // Check for horizontal collision
+        if (ball.position.x + r >= bounds.width || ball.position.x - r <= 0) {
+            conf.directionX *= -1;
+            beepSound.play();
+            // Change color on bounce for DVD effect
+            ball.fillColor = getRandomColor();
+        }
+        
+        // Check for vertical collision
+        if (ball.position.y + r >= bounds.height || ball.position.y - r <= 0) {
+            conf.directionY *= -1;
+            beepSound.play();
+            // Change color on bounce for DVD effect
+            ball.fillColor = getRandomColor();
+        }
+        
+        // Move ball
+        const deltaX = Math.round(bounds.width - 2 * r);
+        const deltaY = Math.round(bounds.height - 2 * r);
+        ball.position.x += conf.directionX * conf.speed * deltaX / 1000;
+        ball.position.y += conf.directionY * conf.speed * deltaY / 1000;
+    };
+    
+    // Random bounce - changes direction randomly on boundary collision
+    const moveRandomBounce = () => {
+        const bounds = paper.view.bounds;
+        const r = conf.radius;
+        
+        // Check for horizontal collision
+        if (ball.position.x + r >= bounds.width || ball.position.x - r <= 0) {
+            conf.directionX *= -1;
+            // Random angle on bounce
+            const randomAngle = (Math.random() * 0.5) + 0.5; // 0.5 to 1.0
+            conf.directionY = (Math.random() > 0.5 ? 1 : -1) * randomAngle;
+            beepSound.play();
+        }
+        
+        // Check for vertical collision
+        if (ball.position.y + r >= bounds.height || ball.position.y - r <= 0) {
+            conf.directionY *= -1;
+            // Random angle on bounce
+            const randomAngle = (Math.random() * 0.5) + 0.5; // 0.5 to 1.0
+            conf.directionX = (Math.random() > 0.5 ? 1 : -1) * randomAngle;
+            beepSound.play();
+        }
+        
+        // Move ball
+        const deltaX = Math.round(bounds.width - 2 * r);
+        const deltaY = Math.round(bounds.height - 2 * r);
+        ball.position.x += conf.directionX * conf.speed * deltaX / 1000;
+        ball.position.y += conf.directionY * conf.speed * deltaY / 1000;
+    };
+    
+    // Random motion - changes direction randomly every few seconds
+    const moveRandomMotion = () => {
+        const bounds = paper.view.bounds;
+        const r = conf.radius;
+        
+        // Check for boundary collisions
+        if (ball.position.x + r >= bounds.width || ball.position.x - r <= 0) {
+            conf.directionX *= -1;
+            beepSound.play();
+        }
+        
+        if (ball.position.y + r >= bounds.height || ball.position.y - r <= 0) {
+            conf.directionY *= -1;
+            beepSound.play();
+        }
+        
+        // Move ball
+        const deltaX = Math.round(bounds.width - 2 * r);
+        const deltaY = Math.round(bounds.height - 2 * r);
+        ball.position.x += conf.directionX * conf.speed * deltaX / 1000;
+        ball.position.y += conf.directionY * conf.speed * deltaY / 1000;
+        
+        // Random direction changes happen in the randomMotionTimer
+    };
+    
+    // Helper function for DVD mode to get random colors
+    const getRandomColor = () => {
+        const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    };
+    
+    // Setup motion based on selected style
+    const setupMotion = () => {
+        // Clear any existing timers
+        if (randomMotionTimer) clearInterval(randomMotionTimer);
+        if (randomBounceTimer) clearInterval(randomBounceTimer);
+        if (dvdTimer) clearInterval(dvdTimer);
+        
+        // Reset direction
+        if (conf.motionStyle === 'horizontal') {
+            conf.directionY = 0;
+            conf.directionX = Math.abs(conf.directionX) * (Math.random() > 0.5 ? 1 : -1);
+            return moveHorizontal;
+        } else if (conf.motionStyle === 'dvd') {
+            // Set initial direction for DVD mode
+            conf.directionX = Math.random() > 0.5 ? 1 : -1;
+            conf.directionY = Math.random() > 0.5 ? 1 : -1;
+            return moveDVD;
+        } else if (conf.motionStyle === 'random-bounce') {
+            // Set initial direction for random bounce
+            conf.directionX = Math.random() > 0.5 ? 1 : -1;
+            conf.directionY = Math.random() > 0.5 ? 1 : -1;
+            return moveRandomBounce;
+        } else if (conf.motionStyle === 'random-motion') {
+            // Set initial direction for random motion
+            conf.directionX = Math.random() > 0.5 ? 1 : -1;
+            conf.directionY = Math.random() > 0.5 ? 1 : -1;
+            
+            // Setup timer to change direction randomly
+            randomMotionTimer = setInterval(() => {
+                // Only change direction if animation is running
+                if (conf.animation) {
+                    // Change direction randomly every 2-5 seconds
+                    conf.directionX = (Math.random() * 2 - 1); // -1 to 1
+                    conf.directionY = (Math.random() * 2 - 1); // -1 to 1
+                    
+                    // Normalize the vector to maintain consistent speed
+                    const length = Math.sqrt(conf.directionX * conf.directionX + conf.directionY * conf.directionY);
+                    conf.directionX /= length;
+                    conf.directionY /= length;
+                    
+                    // Play a subtle sound for direction change
+                    try {
+                        const directionSound = new Audio();
+                        directionSound.src = 'beep.mp3';
+                        directionSound.volume = 0.05;
+                        directionSound.play();
+                    } catch (e) {
+                        console.log('Audio not supported');
+                    }
+                }
+            }, Math.random() * 3000 + 2000); // Random interval between 2-5 seconds
+            
+            return moveRandomMotion;
+        }
+        
+        // Default to horizontal
+        return moveHorizontal;
+    };
 
     const startAnimation = () => {
         if (!conf.animation) {
-            conf.animation = paper.view.onFrame = (event) => moveBall();
+            // Set up motion based on selected style
+            const moveFunction = setupMotion();
+            conf.animation = paper.view.onFrame = () => moveFunction();
         }
+        
         if (conf.timeEnabled) {
             conf.time = timeProps.defaultOn;
         }
+        
         startBtn.classList.add("hidden");
         stopBtn.classList.remove("hidden");
         
@@ -332,6 +545,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const pauseAnimation = () => {
         paper.view.onFrame = null;
         conf.animation = null;
+        
+        // Clear timers
+        if (randomMotionTimer) clearInterval(randomMotionTimer);
+        if (randomBounceTimer) clearInterval(randomBounceTimer);
+        if (dvdTimer) clearInterval(dvdTimer);
+        
         startBtn.classList.remove("hidden");
         stopBtn.classList.add("hidden");
     };
@@ -339,6 +558,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const stopAnimation = () => {
         paper.view.onFrame = null;
         conf.animation = null;
+        
+        // Clear timers
+        if (randomMotionTimer) clearInterval(randomMotionTimer);
+        if (randomBounceTimer) clearInterval(randomBounceTimer);
+        if (dvdTimer) clearInterval(dvdTimer);
+        
         ball.position = getStartPosition();
         paper.view.update();
         startBtn.classList.remove("hidden");
@@ -407,6 +632,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     lang.addEventListener('change', (event) => {
         conf.lang = event.target.value
+    });
+    
+    motionStyle.addEventListener('change', (event) => {
+        conf.motionStyle = event.target.value;
     });
 
     canvas.addEventListener('click', (event) => {
