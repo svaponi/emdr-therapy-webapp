@@ -265,3 +265,21 @@ emoji-picker {
         width: 320px;
     }
 }
+
+/* Fullscreen button styling */
+.fullscreen-control {
+    margin-bottom: 20px;
+}
+
+#fullscreen-btn {
+    width: 100%;
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+#fullscreen-btn:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}

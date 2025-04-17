@@ -7,7 +7,8 @@ const translations = {
         time: 'Timer',
         start: 'Start',
         stop: 'Stop',
-        shape: 'Shape'
+        shape: 'Shape',
+        fullscreen: 'Fullscreen Mode'
     },
     de: {
         label: 'Deutsch',
@@ -17,7 +18,8 @@ const translations = {
         time: 'Timer',
         start: 'Start',
         stop: 'Halt',
-        shape: 'Form'
+        shape: 'Form',
+        fullscreen: 'Vollbildmodus'
     },
     fr: {
         label: 'Français',
@@ -27,7 +29,8 @@ const translations = {
         time: 'Minuteur',
         start: 'Démarrer',
         stop: 'Arrêtez',
-        shape: 'Forme'
+        shape: 'Forme',
+        fullscreen: 'Mode plein écran'
     },
     it: {
         label: 'Italiano',
@@ -37,7 +40,8 @@ const translations = {
         time: 'Timer',
         start: 'Avvio',
         stop: 'Stop',
-        shape: 'Forma'
+        shape: 'Forma',
+        fullscreen: 'Modalità a tutto schermo'
     },
     es: {
         label: 'Español',
@@ -47,7 +51,8 @@ const translations = {
         time: 'Temporizador',
         start: 'Inicia',
         stop: 'Para',
-        shape: 'Forma'
+        shape: 'Forma',
+        fullscreen: 'Modo pantalla completa'
     }
 }
 document.addEventListener("DOMContentLoaded", () => {
@@ -89,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentShape = document.getElementById('current-shape');
     const shapePickerContainer = document.getElementById('shape-picker-container');
     const emojiPicker = document.getElementById('emoji-picker');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
 
     // Shape/Emoji picker functionality
     shapeButton.addEventListener('click', () => {
@@ -245,6 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const t = translations[conf.lang];
         startBtn.innerText = t.start;
         stopBtn.innerText = t.stop;
+        fullscreenBtn.innerText = t.fullscreen;
         speed.labels[0].innerText = t.speed;
         radius.labels[0].innerText = t.dimension;
         color.labels[0].innerText = t.colors;
@@ -358,6 +365,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     startBtn.addEventListener('click', startAnimation);
     stopBtn.addEventListener('click', stopAnimation);
+    fullscreenBtn.addEventListener('click', () => {
+        toggleFullscreen();
+        // Close menu after toggling fullscreen
+        controls.classList.remove('open');
+        
+        // Play feedback sound for accessibility
+        try {
+            const fullscreenSound = new Audio();
+            fullscreenSound.src = 'beep.mp3';
+            fullscreenSound.volume = 0.15;
+            fullscreenSound.play();
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+    });
 
     speed.addEventListener('input', (event) => {
         conf.speed = parseInt(event.target.value, 10);
@@ -396,11 +418,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener('keydown', (event) => {
         console.log(event.code);
-        if (event.code === 'Space') {
-            toggleFullscreen();
-        } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-            toggleFullscreen();
-        } else if (event.code === 'Escape') {
+        // Removed keyboard shortcuts for fullscreen (Space and Enter)
+        if (event.code === 'Escape') {
+            // Only keep Escape to close menus for accessibility
             controls.classList.remove('open');
             // Also close emoji picker if open
             shapePickerContainer.classList.remove('visible');
