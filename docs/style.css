@@ -68,22 +68,24 @@ canvas {
 .controls-sidebar {
     position: fixed;
     top: 0;
-    right: -300px;
+    right: -320px;
     width: 280px;
     height: 100%;
     background-color: white;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
     z-index: 200;
-    transition: right 0.3s ease-in-out;
+    transition: right 0.3s ease-in-out, opacity 0.2s ease-in-out;
     padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 15px;
     overflow-y: auto;
+    opacity: 0;
 }
 
 .controls-sidebar.open {
     right: 0;
+    opacity: 1;
 }
 
 .controls-header {
