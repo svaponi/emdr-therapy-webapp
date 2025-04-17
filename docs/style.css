@@ -12,6 +12,8 @@ body {
     background-color: #eee;
     color: #333;
     min-width: 244px;
+    overflow: hidden;
+    position: relative;
 }
 
 main {
@@ -23,51 +25,121 @@ main {
 
 #canvas-container {
     width: 100%;
-    height: calc(100% - 54px);
+    height: 100%;
 }
-
 
 canvas {
     width: 100%;
     height: 100%;
 }
 
-
-#controls-container {
-    box-sizing: border-box;
-    /*height: 54px;*/
-    padding: 10px;
+/* Hamburger menu button */
+.hamburger-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 5px;
+    z-index: 100;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.hamburger-btn:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.hamburger-line {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: white;
+    border-radius: 3px;
+}
+
+/* Controls sidebar */
+.controls-sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 280px;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 200;
+    transition: right 0.3s ease-in-out;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+}
+
+.controls-sidebar.open {
+    right: 0;
+}
+
+.controls-header {
+    display: flex;
     justify-content: space-between;
-    align-content: flex-start;
-    gap: 10px 10px;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.controls-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
 }
 
 .control {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
 .control .label {
     position: relative;
-    top: 6px;
+    width: 100%;
+    margin-bottom: 5px;
     color: black;
+    font-weight: bold;
 }
 
 #radius, #speed, #time {
-    width: 74px;
+    width: 100px;
 }
 
 #color, #bg-color {
-    width: 38px;
+    width: 45px;
+    height: 38px;
+    margin-right: 10px;
 }
 
 #lang {
-    width: 120px;
+    width: 100%;
 }
 
 .start-stop {
-    width: 100px !important;
+    width: 100% !important;
+    margin-bottom: 5px;
 }
 
 .switch {
@@ -128,4 +200,11 @@ input:checked + .slider:before {
 
 .slider.round:before {
     border-radius: 50%;
+}
+
+/* Hide hamburger on larger screens if desired */
+@media (min-width: 992px) {
+    .controls-sidebar {
+        width: 320px;
+    }
 }

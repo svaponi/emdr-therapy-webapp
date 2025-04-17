@@ -78,6 +78,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const lang = document.getElementById('lang');
     const canvas = document.getElementById('canvas');
     const controls = document.getElementById('controls-container');
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const closeMenuBtn = document.getElementById('close-menu-btn');
+
+    // Hamburger menu functionality
+    hamburgerBtn.addEventListener('click', () => {
+        controls.classList.add('open');
+        // Play a subtle sound for accessibility
+        try {
+            const openSound = new Audio();
+            openSound.src = 'beep.mp3';
+            openSound.volume = 0.1;
+            openSound.play();
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+    });
+
+    closeMenuBtn.addEventListener('click', () => {
+        controls.classList.remove('open');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!controls.contains(event.target) && event.target !== hamburgerBtn) {
+            controls.classList.remove('open');
+        }
+    });
 
     // Initialize state
     startBtn.classList.remove("hidden");
@@ -206,6 +233,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         startBtn.classList.add("hidden");
         stopBtn.classList.remove("hidden");
+        
+        // Close menu when starting animation
+        controls.classList.remove('open');
     };
 
     const pauseAnimation = () => {
@@ -274,7 +304,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     canvas.addEventListener('click', (event) => {
-        toggleAnimation()
+        // Check if the click is on the canvas and not on the controls
+        if (!controls.contains(event.target) && event.target !== hamburgerBtn) {
+            toggleAnimation();
+        }
     });
 
     document.addEventListener('keydown', (event) => {
@@ -283,6 +316,8 @@ document.addEventListener("DOMContentLoaded", () => {
             toggleFullscreen();
         } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
             toggleFullscreen();
+        } else if (event.code === 'Escape') {
+            controls.classList.remove('open');
         }
     });
 

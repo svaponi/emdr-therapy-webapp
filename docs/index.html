@@ -25,7 +25,18 @@
 <div id="canvas-container">
     <canvas id="canvas" resize></canvas>
 </div>
-<div id="controls-container">
+
+<button id="hamburger-btn" class="hamburger-btn" aria-label="Open menu">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+</button>
+
+<div id="controls-container" class="controls-sidebar">
+    <div class="controls-header">
+        <h2>EMDR Controls</h2>
+        <button id="close-menu-btn" class="close-btn" aria-label="Close menu">×</button>
+    </div>
     <div class="control">
         <button class="form-control btn btn-primary start-stop" id="start-btn">Start</button>
         <button class="form-control btn btn-danger start-stop hidden" id="stop-btn">Stop</button>
