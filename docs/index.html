@@ -1,65 +1,93 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="utf-8"/>
+  <head>
+    <meta charset="utf-8" />
     <title>EMDR Therapy</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="keywords" content="emdr, emdr treatment, emdr therapy, self-administrated emdr"/>
-    <meta name="description" content="A simple webapp for self-administrated EMDR treatment"/>
-    <meta name="author" content="svaponi.github.com"/>
-    <meta name="robots" content="all"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="pragma" content="no-cache"/>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="stylesheet" href="bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="style.css" />
     <script src="paper.min.js"></script>
-    <script src="app.js"></script>
-</head>
-<audio id="beep-sound">
-    <source src="beep.mp3" type="audio/mp3"/>
-    <source src="beep.wav" type="audio/wav"/>
-</audio>
-<body>
-<div id="canvas-container">
-    <canvas id="canvas" resize></canvas>
-</div>
-<div id="controls-container">
-    <div class="control">
-        <button class="form-control btn btn-primary start-stop" id="start-btn">Start</button>
-        <button class="form-control btn btn-danger start-stop hidden" id="stop-btn">Stop</button>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <audio id="beep-sound">
+      <source src="beep.mp3" type="audio/mp3" />
+      <source src="beep.wav" type="audio/wav" />
+    </audio>
+
+    <div id="canvas-container">
+      <canvas id="canvas" resize></canvas>
     </div>
-    <div class="control">
-        <label class="label" for="speed">Speed</label>
-        <input id="speed" class="form-control" type="number"/>
-    </div>
-    <div class="control">
-        <label class="label" for="radius">Dimension</label>
-        <input id="radius" class="form-control" type="number"/>
-    </div>
-    <div class="control">
-        <label class="label" for="color">Colors</label>
-        <input id="color" class="form-control" type="color"/>
-        <input id="bg-color" class="form-control" type="color"/>
-    </div>
-    <div class="control">
-        <label class="label" for="time">Time</label>
-        <input id="time" class="form-control" type="number"/>
-        <label class="switch">
-            <input id="time-switch" type="checkbox">
-            <span class="slider round"></span>
-        </label>
-    </div>
-    <div class="control">
-        <select id="lang" class="form-control">
-            <option value="en">English</option>
-            <option value="de">Deutsch</option>
-            <option value="fr">Français</option>
-            <option value="it">Italiano</option>
-            <option value="es">Español</option>
+
+    <div id="controls-container">
+      <div class="control">
+        <button class="form-control btn btn-primary start-stop" id="start-btn">
+          Start
+        </button>
+        <button
+          class="form-control btn btn-danger start-stop hidden"
+          id="stop-btn"
+        >
+          Stop
+        </button>
+      </div>
+
+      <div class="control">
+        <label for="speed">Speed</label>
+        <input id="speed" class="form-control" type="number" />
+      </div>
+
+      <div class="control">
+        <label for="radius">Size</label>
+        <input id="radius" class="form-control" type="number" />
+      </div>
+
+      <div class="control">
+        <label for="color">Colors</label>
+        <input id="color" class="form-control" type="color" value="#5ac4af" />
+        <input
+          id="bg-color"
+          class="form-control"
+          type="color"
+          value="#1f1f1f"
+        />
+      </div>
+
+      <div class="control col">
+        <label for="animation-mode">Animation Mode</label>
+        <select id="animation-mode" class="form-control">
+          <option value="horizontal">Horizontal</option>
+          <option value="vertical">Vertical</option>
+          <option value="round">Round</option>
         </select>
+      </div>
+
+      <div class="control">
+        <label for="color-changing">Color Changing</label>
+        <label class="switch">
+          <input id="color-changing" type="checkbox" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="control">
+        <label for="time">Time</label>
+        <input id="time" class="form-control" type="number" />
+        <label class="switch">
+          <input id="time-switch" type="checkbox" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="control">
+        <select id="lang" class="form-control">
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="es">Español</option>
+        </select>
+      </div>
     </div>
-</div>
-</body>
+  </body>
 </html>

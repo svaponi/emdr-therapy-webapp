@@ -46,12 +46,15 @@ canvas {
 
 .control {
     display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.control .label {
-    position: relative;
-    top: 6px;
-    color: black;
+.control label {
+    font-size: 14px !important;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
 }
 
 #radius, #speed, #time {
@@ -73,8 +76,8 @@ canvas {
 .switch {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 32px;
+    width: 42px;
+    height: 30px;
     margin: 0 0 0 10px;
 }
 
@@ -117,13 +120,13 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-    -webkit-transform: translateX(16px);
-    -ms-transform: translateX(16px);
-    transform: translateX(16px);
+    -webkit-transform: translateX(10px);
+    -ms-transform: translateX(10px);
+    transform: translateX(10px);
 }
 
 .slider.round {
-    border-radius: 32px;
+    border-radius: 25px;
 }
 
 .slider.round:before {

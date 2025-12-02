@@ -1,8 +1,9 @@
 # emdr-therapy-webapp
 
 A simple web app for self-administered EMDR treatment.
+based on  [svaponi/emdr-therapy-webapp repo](https://github.com/svaponi/emdr-therapy-webapp)
 
-Click [here](https://svaponi.github.io/emdr-therapy-webapp/) to see it in action.
+Click [here](https://rotrotal.github.io/emdr-therapy-webapp/) to see it in action.
 
 <br/>
 
